@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Election Results</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Live Election Results</h1>
+    <div id="results"></div>
+    <canvas id="resultsChart" width="400" height="200"></canvas>
+
+    <script>
+        async function fetchResults() {
+            const response = await fetch('https://192.168.113.92:5001/tally_votes');
+            const data = await response.json();
+            
+            // Display raw results
+            document.getElementById('results').innerHTML = `
+                <p>Party A: ${data.result["Party A"]} votes</p>
+                <p>Party B: ${data.result["Party B"]} votes</p>
+            `;
+
+            // Display chart
+            const ctx = document.getElementById('resultsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Party A', 'Party B'],
+                    datasets: [{
+                        label: 'Votes',
+                        data: [data.result["Party A"], data.result["Party B"]],
+                        backgroundColor: ['#4CAF50', '#2196F3']
+                    }]
+                }
+            });
+        }
+
+        fetchResults();
+    </script>
+</body>
+</html>
